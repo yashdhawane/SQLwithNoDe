@@ -6,6 +6,12 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>hii</h2>
+    <h2>EDIT THIS username:<%= data.username  %></h2>
+    <form method="post" action="/user/<%= data.id %>?_method=PATCH">
+        <textarea name="username" ><%= data.username %></textarea>
+        <input name="password" type="password" placeholder="enter password"/>
+        <button>submit</button>
+    </form>
+    
 </body>
 </html>

@@ -2,9 +2,12 @@ const { faker, da } = require('@faker-js/faker');
 const mysql=require('mysql2')
 const express =require('express')
 const path =require("path")
-
 const app=express();
 
+const methodoverride =require('method-override')
+
+app.use(methodoverride("_method"));
+app.use(express.urlencoded({extended:true}));
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"/views"));
 
@@ -79,22 +82,50 @@ const connection = mysql.createConnection({
   })
 
 
-  app.get("user/:id/edit",(req,res)=>{
+  app.get("/user/:id/edit",(req,res)=>{
     let { id } = req.params;
     
     try {
-      let q =`SELCT * FROM user WHERE id='${id}'`;
+      let q =`SELECT * FROM user WHERE id='${id}'`;
       connection.query(q, (err,result)=>{
           if(err) throw err;
-          let data=result;
-          console.log(data);
-          res.render("edit.ejs",{result});
+          let data=result[0];
+          
+          res.render("edit.ejs",{data});
       });
       
     } catch (err) {
       console.log(err);
     }
    
+  })
+
+
+  app.patch("/user/:id",(req,res)=>{
+    try {
+      let { id } = req.params;
+      let {password: formpass,username: newusername} =req.body;
+      let q =`SELECT * FROM user WHERE id='${id}'`;
+      connection.query(q, (err,result)=>{
+          if(err) throw err;
+          let data=result[0];
+          console.log(data);
+          if(formpass != data.password){
+            res.send("wrong")
+          }
+          else{
+            let q2 = `UPDATE user SET username= '${newusername}' WHERE id='${id}'`;
+            connection.query(q2, (err,result)=>{
+                if(err) throw err;
+                res.redirect("/users")
+
+          })
+          
+    }});
+      
+    } catch (err) {
+      console.log(err);
+    }
   })
 
   app.listen("3000",()=>{
