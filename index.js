@@ -16,7 +16,7 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'delta_app',
-    password: 'Mysql@17112001'
+    password: '' //add password
   });
 
  
